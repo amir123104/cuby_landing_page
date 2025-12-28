@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuby Matrix Mini | CRP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff;
+            color: #000;
+            line-height: 1.6;
+            overflow-x: hidden;
+            cursor: default;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+        
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        p, li {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Minimalist Hero Section */
+        .hero-minimal {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #fff;
+        }
+        
+        /* Background CUBY text */
+        .hero-bg-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Space Mono', monospace;
+            font-size: 20vw;
+            font-weight: 900;
+            color: #f5f5f5;
+            letter-spacing: -0.05em;
+            z-index: 1;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        /* 3D Object Container - Higher layer */
+        .object-3d-container {
+            position: relative;
+            z-index: 2;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+        }
+        
+        /* Placeholder for your 3D model */
+        .model-placeholder {
+            width: 350px;
+            height: 350px;
+            perspective: 1000px;
+            position: relative;
+        }
+        
+        /* 
+        TO ADD YOUR OWN 3D MODEL/IMAGE:
+        Replace the content inside .model-placeholder with:
+        <img src="YOUR_IMAGE_PATH.png" alt="Cuby" style="width: 100%; height: 100%; object-fit: contain;">
+        
+        Or for a 3D viewer/embed, replace with your embed code
+        
+        In GitHub Pages, place your image file in the same directory as index.html
+        or in an /images folder, then use:
+        <img src="./your-image.png"> or <img src="./images/your-image.png">
+        */
+        
+        .placeholder-cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(-20deg);
+            animation: floatCube 6s ease-in-out infinite;
+        }
+        
+        .placeholder-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #000;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 2px;
+            padding: 15px;
+        }
+        
+        .placeholder-face.front { transform: translateZ(175px); }
+        .placeholder-face.back { transform: rotateY(180deg) translateZ(175px); }
+        .placeholder-face.right { transform: rotateY(90deg) translateZ(175px); }
+        .placeholder-face.left { transform: rotateY(-90deg) translateZ(175px); }
+        .placeholder-face.top { transform: rotateX(90deg) translateZ(175px); }
+        .placeholder-face.bottom { transform: rotateX(-90deg) translateZ(175px); }
+        
+        .led-mini {
+            background-color: #000;
+            opacity: 0.1;
+            transition: all 0.3s;
+        }
+        
+        .led-mini.active {
+            opacity: 1;
+        }
+        
+        /* Buy Now Button */
+        .buy-now {
+            display: inline-block;
+            padding: 1.5rem 3.5rem;
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 3px solid #000;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            z-index: 3;
+        }
+        
+        .buy-now:hover {
+            background-color: #fff;
+            color: #000;
+            transform: translateY(-5px);
+            box-shadow: 10px 10px 0 #000;
+        }
+        
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            animation: bounce 2s infinite;
+            opacity: 0.5;
+        }
+        
+        /* Content Sections */
+        section {
+            padding: 8rem 3rem;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Concept Section */
+        .concept {
+            background-color: #000;
+            color: #fff;
+            border-top: 5px solid #000;
+            border-bottom: 5px solid #000;
+        }
+        
+        .concept p {
+            font-size: 2rem;
+            max-width: 800px;
+        }
+        
+        /* Differentiators */
+        .differentiators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+        
+        .diff-item {
+            padding: 2rem;
+            border: 3px solid #000;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .diff-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 15px 15px 0 #000;
+        }
+        
+        .diff-item h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* How It Works */
+        .steps-3d {
+            display: flex;
+            justify-content: space-between;
+            gap: 4rem;
+            margin-top: 4rem;
+            perspective: 1000px;
+        }
+        
+        .step-3d {
+            flex: 1;
+            padding: 3rem 2rem;
+            border: 3px solid #000;
+            transform-style: preserve-3d;
+            transition: all 0.5s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .step-3d:hover {
+            transform: rotateY(10deg) rotateX(5deg);
+            box-shadow: 20px 20px 0 #000;
+        }
+        
+        .step-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            position: absolute;
+            top: -2rem;
+            left: -1rem;
+            background-color: #fff;
+            padding: 0 1rem;
+        }
+        
+        /* Community Section */
+        .community {
+            background-color: #000;
+            color: #fff;
+        }
+        
+        .pattern-generator {
+            width: 100%;
+            height: 300px;
+            border: 3px solid #fff;
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 1px;
+            padding: 10px;
+        }
+        
+        .pattern-cell {
+            background-color: #fff;
+            opacity: 0.1;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .pattern-cell:hover {
+            opacity: 1;
+        }
+        
+        /* Brand Section */
+        .brand {
+            min-height: 50vh;
+        }
+        
+        .crp-logo {
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 4rem 3rem;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            border-top: 5px solid #000;
+        }
+        
+        /* Animations */
+        @keyframes floatCube {
+            0%, 100% { transform: translateY(0) rotateX(-20deg) rotateY(-20deg); }
+            50% { transform: translateY(-20px) rotateX(-20deg) rotateY(10deg); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .hero-bg-text {
+                font-size: 25vw;
+            }
+            
+            .object-3d-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .model-placeholder {
+                width: 280px;
+                height: 280px;
+            }
+            
+            section {
+                min-height: auto;
+                padding: 6rem 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-bg-text {
+                font-size: 30vw;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .object-3d-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .model-placeholder {
+                width: 230px;
+                height: 230px;
+            }
+            
+            .buy-now {
+                font-size: 1.2rem;
+                padding: 1.2rem 2.5rem;
+            }
+            
+            .differentiators-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .steps-3d {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Minimalist Hero Section -->
+    <section class="hero-minimal">
+        <!-- Background Text -->
+        <div class="hero-bg-text">CUBY</div>
+        
+        <!-- 3D Object Container (Higher Layer) -->
+        <div class="object-3d-container">
+            <div class="model-placeholder">
+                <!-- 
+                REPLACE THIS SECTION WITH YOUR OWN 3D MODEL/IMAGE
+                
+                For a static image:
+                <img src="./your-cuby-image.png" alt="Cuby Matrix Mini" style="width: 100%; height: 100%; object-fit: contain;">
+                
+                For a 3D viewer (like Sketchfab embed):
+                <iframe src="YOUR_EMBED_URL" style="width: 100%; height: 100%; border: none;"></iframe>
+                
+                Place your image file in the same folder as your index.html in GitHub Pages
+                -->
+                
+                <!-- Placeholder Cube (remove this when adding your own model) -->
+                <div class="placeholder-cube" id="heroCube">
+                    <div class="placeholder-face front" id="heroFront"></div>
+                    <div class="placeholder-face back"></div>
+                    <div class="placeholder-face right"></div>
+                    <div class="placeholder-face left"></div>
+                    <div class="placeholder-face top"></div>
+                    <div class="placeholder-face bottom"></div>
+                </div>
+            </div>
+            
+            <!-- Buy Now Button -->
+            <a href="https://scxtax-ra.myshopify.com/products/cuby-matrix-mini" class="buy-now" target="_blank">
+                BUY NOW
+            </a>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">SCROLL ↓</div>
+    </section>
+    
+    <!-- Concept Section -->
+    <section class="concept">
+        <div class="container">
+            <h2>Digital Minimalism</h2>
+            <p>A pure interface for creative expression. 512 LEDs in a perfect cube. Transform abstract ideas into tangible light patterns.</p>
+            <p>No software installation. No coding. Just creativity flowing from mind to light in real time.</p>
+        </div>
+    </section>
+    
+    <!-- Differentiators -->
+    <section class="differentiators">
+        <div class="container">
+            <h2>Why Different</h2>
+            <div class="differentiators-grid">
+                <div class="diff-item">
+                    <h3>Plug & Play</h3>
+                    <p>USB-C connection. Instant recognition. Zero configuration.</p>
+                </div>
+                <div class="diff-item">
+                    <h3>Visual Editor</h3>
+                    <p>Browser-based timeline animation. Draw frame by frame.</p>
+                </div>
+                <div class="diff-item">
+                    <h3>Real-time Sync</h3>
+                    <p>See changes instantly on device. No delay, no buffering.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2>Create & Share</h2>
+            <div class="steps-3d">
+                <div class="step-3d">
+                    <div class="step-number">01</div>
+                    <h3>Design</h3>
+                    <p>Use the visual editor to create frames and animations.</p>
+                </div>
+                <div class="step-3d">
+                    <div class="step-number">02</div>
+                    <h3>Preview</h3>
+                    <p>See your creation on the 3D preview before sending.</p>
+                </div>
+                <div class="step-3d">
+                    <div class="step-number">03</div>
+                    <h3>Share</h3>
+                    <p>Publish to community or keep private. Remix others' work.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Community Section -->
+    <section class="community">
+        <div class="container">
+            <h2>Community Patterns</h2>
+            <p>Explore and interact with patterns from the global Cuby community.</p>
+            <div class="pattern-generator" id="patternGenerator"></div>
+        </div>
+    </section>
+    
+    <!-- Brand Section -->
+    <section class="brand">
+        <div class="container">
+            <div class="crp-logo">CRP</div>
+            <p>Experimental digital objects since 2018. Design-driven tools for creative expression.</p>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>CRP © 2023 — Digital Objects, Real Connections</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Create placeholder cube LEDs
+        const heroFront = document.getElementById('heroFront');
+        if (heroFront) {
+            for(let i = 0; i < 64; i++) {
+                const led = document.createElement('div');
+                led.className = 'led-mini';
+                heroFront.appendChild(led);
+            }
+            
+            // Animate some LEDs
+            const leds = heroFront.querySelectorAll('.led-mini');
+            setInterval(() => {
+                leds.forEach(led => {
+                    if(Math.random() > 0.95) {
+                        led.classList.add('active');
+                        setTimeout(() => led.classList.remove('active'), 500);
+                    }
+                });
+            }, 100);
+        }
+        
+        // Cube rotation on mouse move
+        const heroCube = document.getElementById('heroCube');
+        if (heroCube) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 30;
+                const y = (e.clientY / window.innerHeight - 0.5) * -30;
+                heroCube.style.transform = `translateY(0) rotateX(${-20 + y}deg) rotateY(${-20 + x}deg)`;
+            });
+        }
+        
+        // Pattern Generator
+        const patternGenerator = document.getElementById('patternGenerator');
+        for(let i = 0; i < 128; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'pattern-cell';
+            cell.addEventListener('click', function() {
+                this.style.opacity = this.style.opacity === '1' ? '0.1' : '1';
+            });
+            patternGenerator.appendChild(cell);
+        }
+        
+        // Auto pattern animation
+        function animatePattern() {
+            const cells = patternGenerator.querySelectorAll('.pattern-cell');
+            cells.forEach(cell => cell.style.opacity = '0.1');
+            
+            for(let i = 0; i < 30; i++) {
+                const randomCell = cells[Math.floor(Math.random() * cells.length)];
+                randomCell.style.opacity = '1';
+            }
+        }
+        
+        setInterval(animatePattern, 2000);
+    </script>
+</body>
+</html>
