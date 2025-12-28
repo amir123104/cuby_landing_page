@@ -29,107 +29,164 @@
             cursor: default;
         }
         
-        /* Typography */
-        h1, h2, h3, h4 {
-            font-family: 'Space Mono', monospace;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: -0.02em;
-        }
-        
-        h2 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-        }
-        
-        p, li {
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Minimalist Hero Section */
+        /* Minimal Hero Section */
         .hero-minimal {
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            overflow: hidden;
+            align-items: center;
+            z-index: 100;
             background-color: #fff;
+            transition: opacity 0.5s ease-out;
+            overflow: hidden;
         }
         
-        /* Background CUBY text */
-        .hero-bg-text {
+        .hero-minimal.scrolled {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .background-text {
+            position: absolute;
+            font-family: 'Space Mono', monospace;
+            font-weight: 900;
+            font-size: 40vw;
+            color: rgba(0, 0, 0, 0.03);
+            z-index: 1;
+            user-select: none;
+            pointer-events: none;
+            animation: pulseBackground 20s infinite alternate;
+        }
+        
+        /* 3D Object Container */
+        .object-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            z-index: 2;
+            margin-bottom: 3rem;
+            border: 4px solid #000;
+            overflow: hidden;
+        }
+        
+        /* Canvas for Three.js */
+        #obj-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        /* Loading State */
+        .loading-state {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Space Mono', monospace;
-            font-size: 20vw;
-            font-weight: 900;
-            color: #f5f5f5;
-            letter-spacing: -0.05em;
-            z-index: 1;
-            user-select: none;
-            pointer-events: none;
+            font-size: 1.2rem;
+            text-align: center;
+            color: #000;
+            background: #fff;
+            padding: 2rem;
+            border: 3px solid #000;
+            z-index: 5;
         }
         
-        /* 3D Object Container - Higher layer */
-        .object-3d-container {
-            position: relative;
-            z-index: 2;
-            width: 400px;
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3rem;
+        .loading-bar {
+            width: 200px;
+            height: 3px;
+            background: #000;
+            margin: 1rem auto;
+            overflow: hidden;
         }
         
-        /* 3D Model Viewer */
-        .model-placeholder {
-            width: 350px;
-            height: 350px;
-            perspective: 1000px;
-            position: relative;
-        }
-        
-        #canvas3d {
-            width: 100%;
+        .loading-progress {
+            width: 0%;
             height: 100%;
-            cursor: grab;
+            background: #000;
+            animation: loadingAnim 2s infinite;
         }
         
-        #canvas3d:active {
-            cursor: grabbing;
+        /* Model Controls */
+        .model-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border: 3px solid #000;
+        }
+        
+        .model-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+        
+        .model-btn:hover {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+            transform: translateY(-2px);
         }
         
         /* Buy Now Button */
-        .buy-now {
+        .buy-now-minimal {
             display: inline-block;
-            padding: 1.5rem 3.5rem;
+            padding: 1.5rem 4rem;
             background-color: #000;
             color: #fff;
             text-decoration: none;
             font-family: 'Space Mono', monospace;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border: 3px solid #000;
+            letter-spacing: 0.2em;
+            border: 4px solid #000;
             position: relative;
+            z-index: 2;
             overflow: hidden;
             transition: all 0.3s;
-            z-index: 3;
+            margin-top: 2rem;
         }
         
-        .buy-now:hover {
+        .buy-now-minimal:hover {
             background-color: #fff;
             color: #000;
-            transform: translateY(-5px);
-            box-shadow: 10px 10px 0 #000;
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .buy-now-minimal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s;
+        }
+        
+        .buy-now-minimal:hover::before {
+            left: 100%;
         }
         
         /* Scroll Indicator */
@@ -138,22 +195,119 @@
             bottom: 3rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10;
+            z-index: 2;
+            animation: bounce 2s infinite;
+            cursor: pointer;
             font-family: 'Space Mono', monospace;
             font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
-            animation: bounce 2s infinite;
+            letter-spacing: 0.3em;
+            color: #000;
             opacity: 0.5;
+            transition: opacity 0.3s;
         }
         
-        /* Content Sections */
+        .scroll-indicator:hover {
+            opacity: 1;
+        }
+        
+        .scroll-indicator::after {
+            content: '▼';
+            display: block;
+            margin-top: 0.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            position: relative;
+            top: 100vh;
+            background-color: #fff;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+        
+        .main-content.visible {
+            opacity: 1;
+        }
+        
+        /* Animations */
+        @keyframes pulseBackground {
+            0% { transform: scale(1) translateY(0); opacity: 0.03; }
+            50% { transform: scale(1.05) translateY(-20px); opacity: 0.05; }
+            100% { transform: scale(1) translateY(0); opacity: 0.03; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        @keyframes loadingAnim {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .object-container {
+                width: 350px;
+                height: 350px;
+            }
+            
+            .model-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+                max-width: 90%;
+            }
+            
+            .model-btn {
+                min-width: 100px;
+                padding: 8px 15px;
+            }
+            
+            .background-text {
+                font-size: 50vw;
+            }
+            
+            .buy-now-minimal {
+                padding: 1rem 2rem;
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .object-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .model-controls {
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .model-btn {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+        }
+        
+        /* [Keep all your existing section styles from previous code] */
         section {
             padding: 8rem 3rem;
             position: relative;
             min-height: 100vh;
             display: flex;
             align-items: center;
+            border-bottom: 4px solid #000;
         }
         
         .container {
@@ -162,12 +316,9 @@
             width: 100%;
         }
         
-        /* Concept Section */
         .concept {
             background-color: #000;
             color: #fff;
-            border-top: 5px solid #000;
-            border-bottom: 5px solid #000;
         }
         
         .concept p {
@@ -175,515 +326,386 @@
             max-width: 800px;
         }
         
-        /* Differentiators */
-        .differentiators-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3rem;
-            margin-top: 4rem;
-        }
+        /* [Add other section styles as needed] */
         
-        .diff-item {
-            padding: 2rem;
-            border: 3px solid #000;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .diff-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 15px 15px 0 #000;
-        }
-        
-        .diff-item h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-        
-        /* How It Works */
-        .steps-3d {
-            display: flex;
-            justify-content: space-between;
-            gap: 4rem;
-            margin-top: 4rem;
-            perspective: 1000px;
-        }
-        
-        .step-3d {
-            flex: 1;
-            padding: 3rem 2rem;
-            border: 3px solid #000;
-            transform-style: preserve-3d;
-            transition: all 0.5s;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .step-3d:hover {
-            transform: rotateY(10deg) rotateX(5deg);
-            box-shadow: 20px 20px 0 #000;
-        }
-        
-        .step-number {
-            font-family: 'Space Mono', monospace;
-            font-size: 4rem;
-            font-weight: 700;
-            position: absolute;
-            top: -2rem;
-            left: -1rem;
-            background-color: #fff;
-            padding: 0 1rem;
-        }
-        
-        /* Community Section */
-        .community {
-            background-color: #000;
-            color: #fff;
-        }
-        
-        .pattern-generator {
-            width: 100%;
-            height: 300px;
-            border: 3px solid #fff;
-            margin-top: 3rem;
-            display: grid;
-            grid-template-columns: repeat(16, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            gap: 1px;
-            padding: 10px;
-        }
-        
-        .pattern-cell {
-            background-color: #fff;
-            opacity: 0.1;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        
-        .pattern-cell:hover {
-            opacity: 1;
-        }
-        
-        /* Brand Section */
-        .brand {
-            min-height: 50vh;
-        }
-        
-        .crp-logo {
-            font-size: 8rem;
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-        
-        /* Footer */
-        footer {
-            padding: 4rem 3rem;
-            text-align: center;
-            font-family: 'Space Mono', monospace;
-            font-size: 1.5rem;
-            border-top: 5px solid #000;
-        }
-        
-        /* Animations */
-        @keyframes floatCube {
-            0%, 100% { transform: translateY(0) rotateX(-20deg) rotateY(-20deg); }
-            50% { transform: translateY(-20px) rotateX(-20deg) rotateY(10deg); }
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .hero-bg-text {
-                font-size: 25vw;
-            }
-            
-            .object-3d-container {
-                width: 300px;
-                height: 300px;
-            }
-            
-            .model-placeholder {
-                width: 280px;
-                height: 280px;
-            }
-            
-            section {
-                min-height: auto;
-                padding: 6rem 2rem;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .hero-bg-text {
-                font-size: 30vw;
-            }
-            
-            h2 {
-                font-size: 2rem;
-            }
-            
-            .object-3d-container {
-                width: 250px;
-                height: 250px;
-            }
-            
-            .model-placeholder {
-                width: 230px;
-                height: 230px;
-            }
-            
-            .buy-now {
-                font-size: 1.2rem;
-                padding: 1.2rem 2.5rem;
-            }
-            
-            .differentiators-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .steps-3d {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Minimalist Hero Section -->
-    <section class="hero-minimal">
-        <!-- Background Text -->
-        <div class="hero-bg-text">CUBY</div>
+    <!-- Minimal Hero Section -->
+    <div class="hero-minimal" id="minimalHero">
+        <div class="background-text">CUBY</div>
         
-        <!-- 3D Object Container (Higher Layer) -->
-        <div class="object-3d-container">
-            <div class="model-placeholder">
-                <canvas id="canvas3d"></canvas>
+        <!-- 3D Object Container -->
+        <div class="object-container" id="objectContainer">
+            <canvas id="obj-canvas"></canvas>
+            
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                Loading 3D Model...
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
             </div>
             
-            <!-- Buy Now Button -->
-            <a href="https://scxtax-ra.myshopify.com/products/cuby-matrix-mini" class="buy-now" target="_blank">
-                BUY NOW
-            </a>
+            <!-- Model Controls -->
+            <div class="model-controls">
+                <button class="model-btn" onclick="toggleRotation()" id="rotateBtn">ROTATE</button>
+                <button class="model-btn" onclick="toggleWireframe()" id="wireframeBtn">WIREFRAME</button>
+                <button class="model-btn" onclick="resetView()">RESET VIEW</button>
+            </div>
         </div>
+        
+        <!-- Buy Now Button -->
+        <a href="https://scxtax-ra.myshopify.com/products/cuby-matrix-mini" class="buy-now-minimal" target="_blank" id="buyButton">
+            BUY NOW
+        </a>
         
         <!-- Scroll Indicator -->
-        <div class="scroll-indicator">SCROLL ↓</div>
-    </section>
-    
-    <!-- Concept Section -->
-    <section class="concept">
-        <div class="container">
-            <h2>Digital Minimalism</h2>
-            <p>A pure interface for creative expression. 512 LEDs in a perfect cube. Transform abstract ideas into tangible light patterns.</p>
-            <p>No software installation. No coding. Just creativity flowing from mind to light in real time.</p>
+        <div class="scroll-indicator" id="scrollIndicator">
+            Discover More
         </div>
-    </section>
+    </div>
     
-    <!-- Differentiators -->
-    <section class="differentiators">
-        <div class="container">
-            <h2>Why Different</h2>
-            <div class="differentiators-grid">
-                <div class="diff-item">
-                    <h3>Plug & Play</h3>
-                    <p>USB-C connection. Instant recognition. Zero configuration.</p>
-                </div>
-                <div class="diff-item">
-                    <h3>Visual Editor</h3>
-                    <p>Browser-based timeline animation. Draw frame by frame.</p>
-                </div>
-                <div class="diff-item">
-                    <h3>Real-time Sync</h3>
-                    <p>See changes instantly on device. No delay, no buffering.</p>
-                </div>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Your existing sections here -->
+        <section class="concept">
+            <div class="container">
+                <h2>Digital Minimalism</h2>
+                <p>A pure interface for creative expression. 512 LEDs in a perfect cube. Transform abstract ideas into tangible light patterns.</p>
+                <p>No software installation. No coding. Just creativity flowing from mind to light in real time.</p>
             </div>
-        </div>
-    </section>
-    
-    <!-- How It Works -->
-    <section class="how-it-works">
-        <div class="container">
-            <h2>Create & Share</h2>
-            <div class="steps-3d">
-                <div class="step-3d">
-                    <div class="step-number">01</div>
-                    <h3>Design</h3>
-                    <p>Use the visual editor to create frames and animations.</p>
-                </div>
-                <div class="step-3d">
-                    <div class="step-number">02</div>
-                    <h3>Preview</h3>
-                    <p>See your creation on the 3D preview before sending.</p>
-                </div>
-                <div class="step-3d">
-                    <div class="step-number">03</div>
-                    <h3>Share</h3>
-                    <p>Publish to community or keep private. Remix others' work.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Community Section -->
-    <section class="community">
-        <div class="container">
-            <h2>Community Patterns</h2>
-            <p>Explore and interact with patterns from the global Cuby community.</p>
-            <div class="pattern-generator" id="patternGenerator"></div>
-        </div>
-    </section>
-    
-    <!-- Brand Section -->
-    <section class="brand">
-        <div class="container">
-            <div class="crp-logo">CRP</div>
-            <p>Experimental digital objects since 2018. Design-driven tools for creative expression.</p>
-        </div>
-    </section>
-    
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>CRP © 2023 — Digital Objects, Real Connections</p>
-        </div>
-    </footer>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        // OBJLoader for Three.js r128
-        THREE.OBJLoader = function(manager) {
-            this.manager = (manager !== undefined) ? manager : THREE.DefaultLoadingManager;
-            this.materials = null;
-        };
+        </section>
+        
+        <!-- Add your other sections here -->
+        
+    </div>
 
-        THREE.OBJLoader.prototype = {
-            constructor: THREE.OBJLoader,
-            
-            load: function(url, onLoad, onProgress, onError) {
-                const scope = this;
-                const loader = new THREE.FileLoader(scope.manager);
-                loader.setPath(this.path);
-                loader.load(url, function(text) {
-                    onLoad(scope.parse(text));
-                }, onProgress, onError);
-            },
-            
-            setPath: function(value) {
-                this.path = value;
-                return this;
-            },
-            
-            parse: function(text) {
-                const object = new THREE.Group();
-                const vertices = [];
-                const normals = [];
-                const uvs = [];
-                
-                const lines = text.split('\n');
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    
-                    if (line.startsWith('v ')) {
-                        const parts = line.split(/\s+/);
-                        vertices.push(
-                            parseFloat(parts[1]),
-                            parseFloat(parts[2]),
-                            parseFloat(parts[3])
-                        );
-                    } else if (line.startsWith('vn ')) {
-                        const parts = line.split(/\s+/);
-                        normals.push(
-                            parseFloat(parts[1]),
-                            parseFloat(parts[2]),
-                            parseFloat(parts[3])
-                        );
-                    } else if (line.startsWith('vt ')) {
-                        const parts = line.split(/\s+/);
-                        uvs.push(
-                            parseFloat(parts[1]),
-                            parseFloat(parts[2])
-                        );
-                    } else if (line.startsWith('f ')) {
-                        const parts = line.split(/\s+/).slice(1);
-                        
-                        if (parts.length >= 3) {
-                            const geometry = new THREE.BufferGeometry();
-                            const positions = [];
-                            
-                            for (let j = 0; j < parts.length; j++) {
-                                const indices = parts[j].split('/');
-                                const vIndex = parseInt(indices[0]) - 1;
-                                
-                                positions.push(
-                                    vertices[vIndex * 3],
-                                    vertices[vIndex * 3 + 1],
-                                    vertices[vIndex * 3 + 2]
-                                );
-                            }
-                            
-                            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-                            geometry.computeVertexNormals();
-                            
-                            const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial());
-                            object.add(mesh);
-                        }
-                    }
-                }
-                
-                return object;
-            }
-        };
-        
-        // Three.js 3D Model Loader
-        const canvas = document.getElementById('canvas3d');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xffffff);
-        
-        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-        camera.position.set(0, 0, 5);
-        
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-        renderer.setSize(350, 350);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        
-        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight1.position.set(5, 5, 5);
-        scene.add(directionalLight1);
-        
-        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
-        directionalLight2.position.set(-5, -5, -5);
-        scene.add(directionalLight2);
-        
-        // Load OBJ model
-        const objLoader = new THREE.OBJLoader();
-        let model = null;
+    <!-- Three.js Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script>
+        // Three.js Variables
+        let scene, camera, renderer, controls, model;
         let autoRotate = true;
+        let wireframeMode = false;
+        let isLoading = true;
         
-        objLoader.load(
-            'https://raw.githubusercontent.com/amir123104/cuby_landing_page/refs/heads/main/tinker.obj',
-            function(obj) {
-                model = obj;
-                
-                // Apply material
-                model.traverse(function(child) {
-                    if (child instanceof THREE.Mesh) {
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: 0x000000,
-                            metalness: 0.3,
-                            roughness: 0.4
-                        });
-                    }
-                });
-                
-                // Center and scale the model
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center);
-                
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 3 / maxDim;
-                model.scale.multiplyScalar(scale);
-                
-                scene.add(model);
-            },
-            function(xhr) {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-            },
-            function(error) {
-                console.error('Error loading model:', error);
-            }
-        );
+        // Your OBJ/MTL file URLs
+        const OBJ_URL = 'https://raw.githubusercontent.com/amir123104/cuby_landing_page/refs/heads/main/tinker.obj';
+        const MTL_URL = 'https://raw.githubusercontent.com/amir123104/cuby_landing_page/refs/heads/main/obj.mtl';
         
-        // Mouse interaction
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-        
-        canvas.addEventListener('mousedown', () => {
-            isDragging = true;
-            autoRotate = false;
-        });
-        
-        canvas.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-        
-        canvas.addEventListener('mouseleave', () => {
-            isDragging = false;
-        });
-        
-        canvas.addEventListener('mousemove', (e) => {
-            if (isDragging && model) {
-                const deltaX = e.offsetX - previousMousePosition.x;
-                const deltaY = e.offsetY - previousMousePosition.y;
-                
-                model.rotation.y += deltaX * 0.01;
-                model.rotation.x += deltaY * 0.01;
-            }
+        // Initialize Three.js Scene
+        function init() {
+            const container = document.getElementById('objectContainer');
             
-            previousMousePosition = {
-                x: e.offsetX,
-                y: e.offsetY
-            };
-        });
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xffffff);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 8);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('obj-canvas'),
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 2;
+            controls.maxDistance = 20;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 10, 7);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            
+            const backLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            backLight.position.set(-5, -5, -5);
+            scene.add(backLight);
+            
+            // Add subtle grid in background
+            const gridHelper = new THREE.GridHelper(10, 10, 0x000000, 0x000000);
+            gridHelper.position.y = -2;
+            gridHelper.material.opacity = 0.1;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+            
+            // Load the 3D Model
+            loadModel();
+            
+            // Start animation loop
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Add click interaction on model
+            renderer.domElement.addEventListener('click', onCanvasClick);
+        }
         
-        // Animation loop
+        // Load OBJ with MTL
+        function loadModel() {
+            const mtlLoader = new THREE.MTLLoader();
+            
+            // Set base URL for textures (if any)
+            mtlLoader.setPath('https://raw.githubusercontent.com/amir123104/cuby_landing_page/refs/heads/main/');
+            
+            mtlLoader.load(MTL_URL, function(materials) {
+                materials.preload();
+                
+                const objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                
+                objLoader.load(
+                    OBJ_URL,
+                    function(object) {
+                        model = object;
+                        
+                        // Center the model
+                        const box = new THREE.Box3().setFromObject(model);
+                        const center = box.getCenter(new THREE.Vector3());
+                        const size = box.getSize(new THREE.Vector3());
+                        
+                        model.position.x = -center.x;
+                        model.position.y = -center.y;
+                        model.position.z = -center.z;
+                        
+                        // Scale model appropriately
+                        const maxDim = Math.max(size.x, size.y, size.z);
+                        const scale = 4 / maxDim;
+                        model.scale.multiplyScalar(scale);
+                        
+                        // Make model black and white (brutalist style)
+                        model.traverse(function(child) {
+                            if (child.isMesh) {
+                                child.material = new THREE.MeshStandardMaterial({
+                                    color: 0x000000,
+                                    metalness: 0.5,
+                                    roughness: 0.5,
+                                    flatShading: false,
+                                    side: THREE.DoubleSide
+                                });
+                                
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                            }
+                        });
+                        
+                        scene.add(model);
+                        
+                        // Hide loading state
+                        isLoading = false;
+                        document.getElementById('loadingState').style.display = 'none';
+                        
+                        // Initial rotation for better view
+                        model.rotation.y = Math.PI / 4;
+                        
+                        console.log('Model loaded successfully!');
+                    },
+                    function(xhr) {
+                        // Progress callback
+                        const percent = (xhr.loaded / xhr.total) * 100;
+                        console.log('Loading: ' + percent.toFixed(2) + '%');
+                    },
+                    function(error) {
+                        console.error('Error loading OBJ:', error);
+                        document.getElementById('loadingState').innerHTML = 
+                            'Error loading model<br><small>' + error + '</small>';
+                    }
+                );
+            });
+        }
+        
+        // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
             
-            if (model && autoRotate) {
+            if (model && autoRotate && !controls.enabled) {
                 model.rotation.y += 0.005;
             }
             
+            controls.update();
             renderer.render(scene, camera);
         }
         
-        animate();
-        
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            const size = Math.min(350, window.innerWidth - 40);
-            renderer.setSize(size, size);
-            camera.aspect = 1;
+        // Window Resize Handler
+        function onWindowResize() {
+            const container = document.getElementById('objectContainer');
+            camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        // Canvas Click Handler
+        function onCanvasClick(event) {
+            if (!model || isLoading) return;
+            
+            // Add click effect - quick rotation
+            model.rotation.y += Math.PI / 8;
+            
+            // Add visual feedback
+            const canvas = document.getElementById('obj-canvas');
+            canvas.style.filter = 'brightness(1.2)';
+            setTimeout(() => {
+                canvas.style.filter = 'brightness(1)';
+            }, 200);
+        }
+        
+        // Control Functions
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+            const btn = document.getElementById('rotateBtn');
+            btn.textContent = autoRotate ? 'PAUSE' : 'ROTATE';
+            
+            // Visual feedback
+            btn.style.background = autoRotate ? '#000' : '#fff';
+            btn.style.color = autoRotate ? '#fff' : '#000';
+            btn.style.border = autoRotate ? 'none' : '2px solid #000';
+        }
+        
+        function toggleWireframe() {
+            if (!model) return;
+            
+            wireframeMode = !wireframeMode;
+            const btn = document.getElementById('wireframeBtn');
+            
+            model.traverse(function(child) {
+                if (child.isMesh) {
+                    child.material.wireframe = wireframeMode;
+                    child.material.needsUpdate = true;
+                }
+            });
+            
+            btn.textContent = wireframeMode ? 'SOLID' : 'WIREFRAME';
+            btn.style.background = wireframeMode ? '#fff' : '#000';
+            btn.style.color = wireframeMode ? '#000' : '#fff';
+            btn.style.border = wireframeMode ? '2px solid #000' : 'none';
+        }
+        
+        function resetView() {
+            if (model) {
+                model.rotation.set(0, Math.PI / 4, 0);
+                model.position.set(0, 0, 0);
+                model.scale.set(1, 1, 1);
+            }
+            
+            camera.position.set(0, 0, 8);
+            controls.reset();
+            
+            // Visual feedback
+            const canvas = document.getElementById('obj-canvas');
+            canvas.style.transform = 'scale(1.05)';
+            canvas.style.transition = 'transform 0.3s';
+            setTimeout(() => {
+                canvas.style.transform = 'scale(1)';
+            }, 300);
+        }
+        
+        // Scroll handling (from your previous code)
+        const minimalHero = document.getElementById('minimalHero');
+        const mainContent = document.getElementById('mainContent');
+        const scrollIndicator = document.getElementById('scrollIndicator');
+        
+        let hasScrolled = false;
+        
+        function handleScroll() {
+            const scrollPosition = window.scrollY;
+            
+            if (scrollPosition > 100 && !hasScrolled) {
+                minimalHero.classList.add('scrolled');
+                mainContent.classList.add('visible');
+                hasScrolled = true;
+                
+                // Pause rotation when scrolled
+                if (autoRotate) {
+                    toggleRotation();
+                }
+            } else if (scrollPosition <= 100 && hasScrolled) {
+                minimalHero.classList.remove('scrolled');
+                mainContent.classList.remove('visible');
+                hasScrolled = false;
+                
+                // Resume rotation when back to hero
+                if (!autoRotate) {
+                    toggleRotation();
+                }
+            }
+            
+            // Parallax effect on background text
+            const backgroundText = document.querySelector('.background-text');
+            backgroundText.style.transform = `scale(${1 - scrollPosition * 0.0001}) translateY(${scrollPosition * 0.2}px)`;
+        }
+        
+        // Scroll indicator click
+        scrollIndicator.addEventListener('click', function() {
+            window.scrollTo({
+                top: window.innerHeight,
+                behavior: 'smooth'
+            });
         });
         
-        // Pattern Generator
-        const patternGenerator = document.getElementById('patternGenerator');
-        for(let i = 0; i < 128; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'pattern-cell';
-            cell.addEventListener('click', function() {
-                this.style.opacity = this.style.opacity === '1' ? '0.1' : '1';
-            });
-            patternGenerator.appendChild(cell);
-        }
-        
-        // Auto pattern animation
-        function animatePattern() {
-            const cells = patternGenerator.querySelectorAll('.pattern-cell');
-            cells.forEach(cell => cell.style.opacity = '0.1');
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            init();
+            window.addEventListener('scroll', handleScroll);
             
-            for(let i = 0; i < 30; i++) {
-                const randomCell = cells[Math.floor(Math.random() * cells.length)];
-                randomCell.style.opacity = '1';
-            }
-        }
+            // Add click effect to buy button
+            const buyButton = document.getElementById('buyButton');
+            buyButton.addEventListener('mouseenter', function() {
+                // Add pulse effect to model
+                if (model) {
+                    model.scale.set(1.05, 1.05, 1.05);
+                    setTimeout(() => {
+                        model.scale.set(1, 1, 1);
+                    }, 300);
+                }
+            });
+        });
         
-        setInterval(animatePattern, 2000);
+        // Add keyboard controls
+        document.addEventListener('keydown', function(event) {
+            if (!model) return;
+            
+            switch(event.key) {
+                case ' ':
+                    toggleRotation();
+                    break;
+                case 'w':
+                case 'W':
+                    toggleWireframe();
+                    break;
+                case 'r':
+                case 'R':
+                    resetView();
+                    break;
+                case 'ArrowUp':
+                    if (model) model.position.y += 0.5;
+                    break;
+                case 'ArrowDown':
+                    if (model) model.position.y -= 0.5;
+                    break;
+            }
+        });
+        
     </script>
 </body>
 </html>
